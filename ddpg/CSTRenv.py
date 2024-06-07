@@ -13,7 +13,7 @@ class VV:
   def __init__(self):
     self.Ca0 =  5.1        # Inlet feed concentration (mol/m^3)
     #self.T =  114.2       # reactor temperature (degC)
-    self.T = 110
+    self.T0 = 135
 
     self.k10 = 1.287e12    # A->B Pre-exponential factor (1/hr)
     self.k20 = 1.287e12    # B->C Pre-exponential factor (1/hr)
@@ -21,12 +21,24 @@ class VV:
     self.E1 = 9758.3       # A->B Activation Energy (K)
     self.E2 = 9758.3       # B->C Activation Energy (K)
     self.E3 = 8560         # 2A->D Activation Energy (K)
+    self.deltaH1 = 4.2  #1st reaction enthalpy (kJ/mol)
+    self.deltaH2 = -11 #2nd reaction enthalpy (kJ/mol)
+    self.deltaH3 = -41.85 #3rd reaction enthalpy (kJ/mol)
+    self.rho = 0.9342 #density (kg/L)
+    self.cp = 3.01 #heat capacit (kJ/kg K)
+    self.Ar = 0.215 #jacket area (m2)
+    self.Kw = 4032 #jacket heat transfer coefficient (kJ/h m2 K)
+    
     self.VR = 10.0         # Reactor volume (l)
+    self.Cp_k = 2.0 # Coolant heat capacity [kj/kg.k]
+    self.A_R = 0.215 # Area of reactor wall [m^2]
+    self.m_k = 5.0 # Coolant mass[kg]
 
     # steady state value of VV
     self.Ca_ss = 2.14
     self.Cb_ss = 1.09
     self.F_ss = 141.9
+    self.F_k = 100
 
   def arrenhius(self, T):
     self.k1 = self.k10*np.exp(-self.E1/(T+273.15))
@@ -34,8 +46,9 @@ class VV:
     self.k3 = self.k30*np.exp(-self.E3/(T+273.15))
 
   def linearlized_dynamics(self, s, t):
-    Ca_dev, Cb_dev, u = s
-    self.arrenhius(self.T)
+    
+    Ca_dev, Cb_dev, T_dev, Tk_dev, u = s
+    self.arrenhius(self.T_ss + T_dev)
 
     dCadt_lin = (-self.F_ss / self.VR - self.k1 - 2*self.k3*self.Ca_ss) * Ca_dev \
           + (self.Ca0-self.Ca_ss) / self.VR * u
@@ -139,7 +152,7 @@ class CSTRenv(gym.Env):
     def __init__(self):
         super(CSTRenv, self).__init__()
         
-        num_PID = 1
+        num_PID = 2
 
         # State Space
         #self.state_space = spaces.Box(low=np.array([0.0, 0.0, 0.0]), high=np.array([50.0, 50.0, 50.0]), dtype=np.float32)
@@ -156,10 +169,11 @@ class CSTRenv(gym.Env):
         
         # initial state
         self.Kp = 5
-        self.Ki = 5
+        self.Ki = 0
         #self.Kd = 0
     
-        self.Ca_setpoint = 3.0      
+        self.Ca_setpoint = 3.0    
+        self.T_setpoint =   
         self.sample_time = 1/2
         
         self.alpha = 1

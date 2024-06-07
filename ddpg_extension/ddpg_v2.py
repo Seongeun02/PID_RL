@@ -37,16 +37,6 @@ print_interval = config['training']['print_interval']
 start_train_size = config['training']['start_train_size']
 train_iterations = config['training']['train_iterations']
 
-# environment parameters
-F_init = config['environment']['F_init']
-Ca_init = config['environment']['Ca_init']
-Cb_init = config['environment']['Cb_init']
-Ca_setpoint = config['environment']['Ca_setpoint']
-sample_time = config['environment']['sample_time']
-alpha = config['environment']['alpha']
-beta = config['environment']['beta']
-delta = config['environment']['delta']      # threshold to start training PI controller from pure P controller
-
 # Replay Buffer
 class ReplayBuffer():
     def __init__(self):
@@ -145,15 +135,7 @@ if __name__ == '__main__':
     DEVICE = torch.device('cuda') if torch.cuda.is_available else torch.device('cpu')
     print("Using PyTorch version: {}, Device: {}".format(torch.__version__, DEVICE))
     
-    env = CSTRenv_v2.CSTRenv(
-                            F_init = F_init,
-                            Ca_init = Ca_init,
-                            Cb_init = Cb_init,
-                            Ca_setpoint = Ca_setpoint,
-                            sample_time = sample_time,
-                            alpha = alpha,
-                            beta = beta,
-                            delta = delta)
+    env = CSTRenv_v2.CSTRenv()
     memory = ReplayBuffer()
 
     ## critic 
@@ -210,6 +192,6 @@ if __name__ == '__main__':
                 
         
         if n_epi%print_interval==0 and n_epi!=0:
-            print("# of episode :{}, avg score : {:.1f}".format(n_epi, sum(score[count-print_interval:count])/print_interval))
+            print("# of episode :{}, avg score : {:.5f}".format(n_epi, sum(score[count-print_interval:count])/print_interval))
 
     env.close()
