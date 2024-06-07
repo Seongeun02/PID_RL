@@ -190,7 +190,6 @@ if __name__ == '__main__':
                         soft_update(mu_i, mu_target_i)
                         soft_update(q,  q_target)                    
                 
-        
         if n_epi%print_interval==0 and n_epi!=0:
             print("# of episode :{}, avg score : {:.5f}".format(n_epi, sum(score[count-print_interval:count])/print_interval))
 
