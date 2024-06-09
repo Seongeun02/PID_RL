@@ -227,9 +227,9 @@ class CSTRenv(gym.Env):
         t_conv = np.argmin(Ca[-1]==Ca)/sample_num
         reward = -abs(Ca[-1] - self.Ca_setpoint) - self.beta*t_conv
         done = False
+        
         if abs(Ca[-1] - self.Ca_setpoint) < self.delta*self.Ca_setpoint:
             self.update_phase = "Ki"
-  
         elif abs(Ca[-1] - self.Ca_setpoint) < 0.02*self.Ca_setpoint:
             done = True
             
