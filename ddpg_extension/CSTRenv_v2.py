@@ -225,7 +225,11 @@ class CSTRenv(gym.Env):
 
         # calculate reward
         t_conv = np.argmin(Ca[-1]==Ca)/sample_num
-        reward = -abs(Ca[-1] - self.Ca_setpoint) - self.beta*t_conv
+        if abs(Ca[-1] - self.Ca_setpoint) <= 0.02 * self.Ca_setpoint:
+            reward = - self.beta*t_conv
+        else:
+            reward = -5 - self.beta*t_conv
+            
         done = False
         
         if abs(Ca[-1] - self.Ca_setpoint) < self.delta*self.Ca_setpoint:
